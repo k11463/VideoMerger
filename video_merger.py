@@ -6,6 +6,12 @@ from tkinter import filedialog, messagebox, scrolledtext
 
 # 嘗試獲取 ffmpeg 路徑
 def get_ffmpeg_path():
+    # 1. 優先檢查程式碼所在資料夾是否有 ffmpeg.exe (適合隨附檔案)
+    local_ffmpeg = os.path.join(os.path.dirname(sys.executable if getattr(sys, 'frozen', False) else __file__), "ffmpeg.exe")
+    if os.path.exists(local_ffmpeg):
+        return local_ffmpeg
+    
+    # 2. 其次嘗試檢查 MoviePy 的環境設定
     try:
         from moviepy.config import get_setting
         path = get_setting("FFMPEG_BINARY")
@@ -13,7 +19,9 @@ def get_ffmpeg_path():
             return path
     except:
         pass
-    return "ffmpeg" # 預設假設在環境變數中
+    
+    # 3. 最後才嘗試系統環境變數
+    return "ffmpeg"
 
 class VideoMergerApp:
     def __init__(self, root):
